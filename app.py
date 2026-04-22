@@ -11,7 +11,7 @@ st.markdown("Dashboard voor PWS Simulaties")
 # Gebruikersinvoer in de zijbalk
 with st.sidebar:
     st.header("Instellingen")
-    n_games = st.slider("Aantal potjes om te simuleren", 100, 100000, 1000)
+    n_games = st.slider("Aantal potjes om te simuleren", 100, 1000000, 1000)
     run_btn = st.button("Start Simulatie")
 
 if run_btn:
