@@ -22,11 +22,9 @@ class UltimateTicTacToe:
 
     def get_legal_moves(self):
         moves = []
-        # Bepaal in welke borden we mogen spelen
         if self.next_small_board != -1 and self.meta_board[self.next_small_board] == " ":
             active_boards = [self.next_small_board]
         else:
-            # Als het bord vol/gewonnen is, mag je overal waar nog geen winnaar is
             active_boards = [i for i, x in enumerate(self.meta_board) if x == " "]
 
         for b_idx in active_boards:
@@ -37,17 +35,14 @@ class UltimateTicTacToe:
 
     def play_move(self, board_idx, slot_idx):
         self.big_board[board_idx][slot_idx] = self.turn
-        
-        # Check of het kleine bord gewonnen is
         winner = self.check_winner(self.big_board[board_idx])
         if winner:
             self.meta_board[board_idx] = winner
         
-        # Bepaal het volgende bord
         if self.meta_board[slot_idx] == " ":
             self.next_small_board = slot_idx
         else:
-            self.next_small_board = -1 # Vrije keuze
+            self.next_small_board = -1
             
         self.turn = "O" if self.turn == "X" else "X"
 
@@ -77,16 +72,10 @@ def simulate_games(n):
             stats["Draw"] += 1
     return stats
 
-# Zorg dat dit alleen draait als je het script direct uitvoert, 
-# en niet wanneer de webapp het importeert.
 if __name__ == "__main__":
-    aantal_potjes = 5000
-    print(f"--- Start simulatie van {aantal_potjes} Ultimate Tic Tac Toe potjes ---")
+    # Dit draait alleen als je het bestand direct opent met 'python3 ultimate_ttt.py'
+    aantal = 5000
     start = time.time()
-
-    resultaten = simulate_games(aantal_potjes)
-
+    res = simulate_games(aantal)
     duur = time.time() - start
-    print(f"Klaar in {duur:.2f} seconden.")
-    print(f"Winnaar X: {resultaten['X']} | Winnaar O: {resultaten['O']} | Gelijkspel: {resultaten['Draw']}")
-    print(f"Snelheid: {aantal_potjes/duur:.1f} potjes/sec")
+    print(f"Klaar! X: {res['X']} | O: {res['O']} | Draw: {res['Draw']} ({aantal/duur:.0f} p/s)")
