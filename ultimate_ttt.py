@@ -1,5 +1,6 @@
 import random
 import time
+import multiprocessing
 
 class UltimateTicTacToe:
     def __init__(self):
@@ -60,22 +61,31 @@ def simuleer_spel():
     return "Gelijkspel"
 
 def simulate_games(n):
-    """Deze functie wordt aangeroepen door de web-interface"""
-    stats = {"X": 0, "O": 0, "Draw": 0}
+    """Gebruikt alle beschikbare CPU cores voor maximale snelheid"""
+    num_cores = multiprocessing.cpu_count() # Dit zal 8 zijn bij jou
+    games_per_core = n // num_cores
+    
+    # We maken een 'Pool' van processen aan
+    with multiprocessing.Pool(processes=num_cores) as pool:
+        # We laten elke core een deel van de potjes simuleren
+        # De functie 'simuleer_spel' moet bovenaan je script staan
+        results = pool.starmap(run_batch, [(games_per_core,) for _ in range(num_cores)])
+    
+    # Voeg alle resultaten van de verschillende cores samen
+    total_stats = {"X": 0, "O": 0, "Draw": 0}
+    for res in results:
+        total_stats["X"] += res["X"]
+        total_stats["O"] += res["O"]
+        total_stats["Draw"] += res["Draw"]
+        
+    return total_stats
+
+def run_batch(n):
+    """Hulpfunctie voor multiprocessing om een groepje potjes te draaien"""
+    batch_stats = {"X": 0, "O": 0, "Draw": 0}
     for _ in range(n):
         winnaar = simuleer_spel()
-        if winnaar == "X":
-            stats["X"] += 1
-        elif winnaar == "O":
-            stats["O"] += 1
-        else:
-            stats["Draw"] += 1
-    return stats
-
-if __name__ == "__main__":
-    # Dit draait alleen als je het bestand direct opent met 'python3 ultimate_ttt.py'
-    aantal = 5000
-    start = time.time()
-    res = simulate_games(aantal)
-    duur = time.time() - start
-    print(f"Klaar! X: {res['X']} | O: {res['O']} | Draw: {res['Draw']} ({aantal/duur:.0f} p/s)")
+        if winnaar == "X": batch_stats["X"] += 1
+        elif winnaar == "O": batch_stats["O"] += 1
+        else: batch_stats["Draw"] += 1
+    return batch_stats
