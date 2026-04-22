@@ -89,3 +89,21 @@ def run_batch(n):
         elif winnaar == "O": batch_stats["O"] += 1
         else: batch_stats["Draw"] += 1
     return batch_stats
+
+if __name__ == "__main__":
+    # Dit gedeelte wordt alleen uitgevoerd als je typt: python3 ultimate_ttt.py
+    aantal_potjes = 5000
+    print(f"--- Start MULTIPROCESSING simulatie van {aantal_potjes} potjes ---")
+    
+    start_time = time.time()
+    
+    # Hier roepen we je multiprocessing functie aan
+    resultaten = simulate_games(aantal_potjes)
+    
+    duur = time.time() - start_time
+    
+    print(f"\nResultaten:")
+    print(f"Winnaar X: {resultaten['X']}")
+    print(f"Winnaar O: {resultaten['O']}")
+    print(f"Gelijkspel: {resultaten['Draw']}")
+    print(f"--- Klaar in {duur:.2f} seconden ({aantal_potjes/duur:.1f} potjes/sec) ---")
