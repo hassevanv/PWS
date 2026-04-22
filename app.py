@@ -5,13 +5,13 @@ from ultimate_ttt import simulate_games  # Hier importeren we jouw logica!
 
 st.set_page_config(page_title="PWS Ultimate Tic Tac Toe", layout="wide")
 
-st.title("🎮 Ultimate Tic Tac Toe Simulatie")
+st.title("Ultimate Tic Tac Toe Simulatie")
 st.markdown("Dashboard voor PWS Simulaties")
 
 # Gebruikersinvoer in de zijbalk
 with st.sidebar:
     st.header("Instellingen")
-    n_games = st.slider("Aantal potjes om te simuleren", 100, 10000, 1000)
+    n_games = st.slider("Aantal potjes om te simuleren", 100, 100000, 1000)
     run_btn = st.button("Start Simulatie")
 
 if run_btn:
