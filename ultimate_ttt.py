@@ -65,7 +65,7 @@ def simuleer_spel():
     return "Gelijkspel"
 
 # Hoofdprogramma
-aantal_potjes = 5000
+aantal_potjes = 6000
 print(f"--- Start simulatie van {aantal_potjes} Ultimate Tic Tac Toe potjes ---")
 start = time.time()
 
