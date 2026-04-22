@@ -64,17 +64,29 @@ def simuleer_spel():
         if res: return res
     return "Gelijkspel"
 
-# Hoofdprogramma
-aantal_potjes = 5000
-print(f"--- Start simulatie van {aantal_potjes} Ultimate Tic Tac Toe potjes ---")
-start = time.time()
+def simulate_games(n):
+    """Deze functie wordt aangeroepen door de web-interface"""
+    stats = {"X": 0, "O": 0, "Draw": 0}
+    for _ in range(n):
+        winnaar = simuleer_spel()
+        if winnaar == "X":
+            stats["X"] += 1
+        elif winnaar == "O":
+            stats["O"] += 1
+        else:
+            stats["Draw"] += 1
+    return stats
 
-stats = {"X": 0, "O": 0, "D": 0}
-for _ in range(aantal_potjes):
-    winnaar = simuleer_spel()
-    stats[winnaar if winnaar != "Gelijkspel" else "D"] += 1
+# Zorg dat dit alleen draait als je het script direct uitvoert, 
+# en niet wanneer de webapp het importeert.
+if __name__ == "__main__":
+    aantal_potjes = 5000
+    print(f"--- Start simulatie van {aantal_potjes} Ultimate Tic Tac Toe potjes ---")
+    start = time.time()
 
-duur = time.time() - start
-print(f"Klaar in {duur:.2f} seconden.")
-print(f"Winnaar X: {stats['X']} | Winnaar O: {stats['O']} | Gelijkspel: {stats['D']}")
-print(f"Snelheid: {aantal_potjes/duur:.1f} potjes/sec")
+    resultaten = simulate_games(aantal_potjes)
+
+    duur = time.time() - start
+    print(f"Klaar in {duur:.2f} seconden.")
+    print(f"Winnaar X: {resultaten['X']} | Winnaar O: {resultaten['O']} | Gelijkspel: {resultaten['Draw']}")
+    print(f"Snelheid: {aantal_potjes/duur:.1f} potjes/sec")
