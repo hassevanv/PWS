@@ -4,7 +4,7 @@ import multiprocessing
 
 class UltimateTicTacToe:
     def __init__(self):
-        # 9 kleine borden van elk 9 vakjes
+        # 9 kleine borden van elk 9 vakjess
         self.big_board = [[" " for _ in range(9)] for _ in range(9)]
         # De status van de 9 grote vakken (wie heeft het kleine bord gewonnen?)
         self.meta_board = [" " for _ in range(9)]
@@ -92,7 +92,7 @@ def run_batch(n):
 
 if __name__ == "__main__":
     # Dit gedeelte wordt alleen uitgevoerd als je typt: python3 ultimate_ttt.py
-    aantal_potjes = 5000
+    aantal_potjes = 1000000
     print(f"--- Start MULTIPROCESSING simulatie van {aantal_potjes} potjes ---")
     
     start_time = time.time()
