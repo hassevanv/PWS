@@ -4,7 +4,7 @@ import multiprocessing
 
 class UltimateTicTacToe:
     def __init__(self):
-        # 9 kleine borden van elk 9 vakjess
+        # 9 kleine borden van telk 9 vakjess
         self.big_board = [[" " for _ in range(9)] for _ in range(9)]
         # De status van de 9 grote vakken (wie heeft het kleine bord gewonnen?)
         self.meta_board = [" " for _ in range(9)]
