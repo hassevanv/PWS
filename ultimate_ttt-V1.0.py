@@ -2,10 +2,10 @@ import random
 import time
 from multiprocessing import Pool, cpu_count
 
-# --- INSTELLINGEN ---
+# Aantal herhalingen
 AANTAL_SIMULATIES = 10000000  
 
-# --- VASTE WINCOMBINATIES (Globale tuples zijn sneller dan lijsten in functies) ---
+# Vaststellen wanneer er sprake is van winst in het grote/kleine bord
 BIG_WIN_CONDITIONS = (
     (10, 20, 30), (40, 50, 60), (70, 80, 90),
     (10, 40, 70), (20, 50, 80), (30, 60, 90),
@@ -18,29 +18,31 @@ SMALL_WIN_CONDITIONS = (
     (1, 5, 9), (3, 5, 7)
 )
 
+# Tactiek van speler 1 (random)
 def player_1_tactic(board, current_section):
-    # List comprehensions zijn in Python razendsnel op C-niveau geoptimaliseerd
-    available_cells = [s for s in range(1, 10) if board[current_section + s] == 0]
-    return random.choice(available_cells)
+    available_cells = [s for s in range(1, 10) if board[current_section + s] == 0] # Vaststellen welke velden beschikbaar zijn
+    return random.choice(available_cells) # Random kiezen uit de beschikbare velden
 
+# Tactiek van speler 2 (random)
 def player_2_tactic(board, current_section):
-    available_cells = [s for s in range(1, 10) if board[current_section + s] == 0]
-    return random.choice(available_cells)
+    available_cells = [s for s in range(1, 10) if board[current_section + s] == 0] # Vaststellen welke velden beschikbaar zijn
+    return random.choice(available_cells) # Random kiezen uit de beschikbare velden
 
+# Vaststellen of er een winnaar is in het grote bord
 def check_big_win(big_board):
     for c in BIG_WIN_CONDITIONS:
-        if big_board[c[0]] == big_board[c[1]] == big_board[c[2]] != 0:
+        if big_board[c[0]] == big_board[c[1]] == big_board[c[2]] != 0: # Kijken of er drie velden op rij dezelfde waarde hebben (niet 0) (een winnaar)
             return big_board[c[0]]
     return 0
 
+# Vaststellen of er een winnaar is in het kleine bord
 def check_small_win(board, big_field):
     for c in SMALL_WIN_CONDITIONS:
-        if board[big_field + c[0]] == board[big_field + c[1]] == board[big_field + c[2]] != 0:
+        if board[big_field + c[0]] == board[big_field + c[1]] == board[big_field + c[2]] != 0: # Kijken of er drie velden op rij dezelfde waarde hebben (niet 0) (een winnaar)
             return board[big_field + c[0]]
             
-    # Snelle check of er nog een 0 in de sectie zit zonder hele lijsten te kopiëren
+    # Kijken of alle velden in het kleine bord vol zijn (geen waarde 0 meer)
     if all(board[big_field + s] != 0 for s in range(1, 10)):
-        # Tel direct
         c1 = sum(1 for s in range(1, 10) if board[big_field + s] == 1)
         return 1 if c1 > 4 else 2  # Als speler 1 er meer dan 4 heeft (dus 5 of meer), wint 1. Anders 2.
             
@@ -57,10 +59,8 @@ def run_single_game(_):
             current_section = random.choice((10, 20, 30, 40, 50, 60, 70, 80, 90))
         else:
             current_section = last_digit * 10
-
-        section_is_full = all(board[current_section + s] != 0 for s in range(1, 10))
         
-        if big_board[current_section] != 0 or section_is_full:
+        if big_board[current_section] != 0:
             available_sections = [
                 big for big in (10, 20, 30, 40, 50, 60, 70, 80, 90)
                 if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))
