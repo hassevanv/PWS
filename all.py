@@ -40,7 +40,7 @@ if __name__ == '__main__':
     s1_tactics = select_simulation_tactics("Speler 1 (S1)", all_tactics)
     s2_tactics = select_simulation_tactics("Speler 2 (S2)", all_tactics)
     
-    aantal_per_matchup = main.ask_simulation_count()
+    aantal_per_simulatie = main.ask_simulation_count()
     start_simulatie = time.time()
     
     # Matrix om de resultaten in op te slaan (dynamisch op basis van selectie)
@@ -49,11 +49,11 @@ if __name__ == '__main__':
     # 2. Run de geselecteerde combinaties
     for t1 in s1_tactics:
         for t2 in s2_tactics:
-            print(f"\n[MATCHUP] {t1} (S1) VS {t2} (S2) starten...")
+            print(f"\n[SIMULATIE] {t1} (S1) VS {t2} (S2) starten...")
             
             cores = main.cpu_count()
-            chunk = max(1, aantal_per_matchup // (cores * 4))
-            game_args = range(aantal_per_matchup)
+            chunk = max(1, aantal_per_simulatie // (cores * 4))
+            game_args = range(aantal_per_simulatie)
 
             with main.Pool(processes=cores, initializer=main.init_worker, initargs=(t1, t2)) as pool:
                 match_results = pool.map(main.run_single_game, game_args, chunksize=chunk)
@@ -77,9 +77,9 @@ if __name__ == '__main__':
         row = f"{t1:<12}"
         for t2 in s2_tactics:
             res = resultaten[t1][t2]
-            w1 = (res[1] / aantal_per_matchup) * 100
-            w2 = (res[2] / aantal_per_matchup) * 100
-            d  = (res[0] / aantal_per_matchup) * 100
+            w1 = (res[1] / aantal_per_simulatie) * 100
+            w2 = (res[2] / aantal_per_simulatie) * 100
+            d  = (res[0] / aantal_per_simulatie) * 100
             row += f"│ {w1:>4.2f}% / {w2:>4.2f}% / {d:>3.2f}% "
         print(row)
         
