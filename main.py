@@ -29,7 +29,7 @@ def check_small_win(board, big_field):
         if board[big_field + c[0]] == board[big_field + c[1]] == board[big_field + c[2]] != 0: # Als drie velden op rij een gelijke waarde !=0 hebben is er sprake van winst
             return board[big_field + c[0]]
             
-    if all(board[big_field + s] != 0 for s in range(1, 10)): # Als alle velden gevuld zijn, is de winst in het kleine veld voor degene met de meeste velden (>4).
+    if all(board[big_field + s] != 0 for s in range(1, 10)): # Als alle velden gevuld zijn, is de winst in het kleine veld voor degene met de meeste velden (>4)
         c1 = sum(1 for s in range(1, 10) if board[big_field + s] == 1)
         return 1 if c1 > 4 else 2  
     return 0
