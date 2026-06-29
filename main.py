@@ -1,6 +1,7 @@
 import os
 import time
 import importlib
+import json
 from multiprocessing import Pool, cpu_count
 
 # Vaststellen welke velden nodig zijn voor winst
@@ -90,11 +91,29 @@ def run_single_game(args):
         current_player = 2 if current_player == 1 else 1 # wisselen van speler
 
 # vragen vooraf genereren
-def get_available_tactics(): # ophalen van de beschikbare tactieken in de map "tactics"
-    tactics_dir = os.path.join(os.path.dirname(__file__), "tactics")
-    files = os.listdir(tactics_dir)
-    tactics = [f[:-3] for f in files if f.endswith(".py") and f != "__init__.py"]
-    return sorted(tactics, key=lambda x: (0 if x == "random" else 1, x))
+def get_available_tactics():
+    base_dir = os.path.dirname(__file__) # tactieken laden vanuit de map "config"
+    config_path = os.path.join(base_dir, "config", "tactics_list.json")
+    tactics_dir = os.path.join(base_dir, "tactics")
+    
+    # kijken of het inladen fouten geeft
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            configured_tactics = json.load(f)
+    except FileNotFoundError:
+        print("Fout: 'config/tactics_list.json' niet gevonden!")
+        return []
+
+    # controleer of de bestanden ook echt bestaan in de map 'tactics'
+    valid_tactics = []
+    for tactic_name in configured_tactics:
+        file_path = os.path.join(tactics_dir, f"{tactic_name}.py")
+        if os.path.exists(file_path):
+            valid_tactics.append(tactic_name)
+        else:
+            print(f"[WAARSCHUWING] Tactiek '{tactic_name}' staat in de config, maar {tactic_name}.py mist in de map 'tactics/'!")
+            
+    return valid_tactics
 
 def select_tactic(player_num, tactics_list): # printen van de beschikbare tactieken  
     print(f"\nBeschikbare tactieken voor Speler {player_num}:")
