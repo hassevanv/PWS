@@ -4,6 +4,7 @@ import importlib
 import random
 from multiprocessing import Pool, cpu_count
 
+# Vaststellen wanneer er sprake is van winst
 BIG_WIN_CONDITIONS = (
     (10, 20, 30), (40, 50, 60), (70, 80, 90),
     (10, 40, 70), (20, 50, 80), (30, 60, 90),
