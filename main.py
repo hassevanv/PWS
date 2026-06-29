@@ -1,7 +1,6 @@
 import os
 import time
 import importlib
-import random
 from multiprocessing import Pool, cpu_count
 
 # Vaststellen welke velden nodig zijn voor winst
@@ -16,6 +15,9 @@ SMALL_WIN_CONDITIONS = (
     (1, 4, 7), (2, 5, 8), (3, 6, 9),
     (1, 5, 9), (3, 5, 7)
 )
+
+worker_tactic_1 = None
+worker_tactic_2 = None
 
 # Vaststellen wanneer er sprake is van winst
 def check_big_win(big_board):
@@ -34,13 +36,19 @@ def check_small_win(board, big_field):
         return 1 if c1 > 4 else 2  
     return 0
 
+def init_worker(tactic_1_name, tactic_2_name):
+   
+    global worker_tactic_1, worker_tactic_2 # variabelen global maken zodat ze in de worker processen beschikbaar zijn
+    
+    mod1 = importlib.import_module(f"tactics.{tactic_1_name}") # importeren van de tactiek van speler 1
+    mod2 = importlib.import_module(f"tactics.{tactic_2_name}") # importeren van de tactiek van speler 2
+    
+    worker_tactic_1 = mod1.choose_move # tactiek van speler 1 toewijzen aan de variabele
+    worker_tactic_2 = mod2.choose_move # tactiek van speler 2 toewijzen aan de variabele
+
 # runnen van een spel
 def run_single_game(args):
-    tactic_1_name, tactic_2_name = args
-    
-    # tactieken importeren vanuit de map "tactics"
-    tactic_1 = importlib.import_module(f"tactics.{tactic_1_name}").choose_move # importeren van de tactiek van speler 1
-    tactic_2 = importlib.import_module(f"tactics.{tactic_2_name}").choose_move # importeren van de tactiek van speler 2
+    global worker_tactic_1, worker_tactic_2 # variabelen global maken zodat ze in de worker processen beschikbaar zijn
 
     # bord en big_board vaststellen
     board = {big + small: 0 for big in range(10, 100, 10) for small in range(1, 10)} 
@@ -59,12 +67,12 @@ def run_single_game(args):
         if forced_section is None:
             any_moves_left = any(big_board[b] == 0 and board[b + s] == 0 for b in big_board for s in range(1, 10)) # vaststellen of er nog zetten mogelijk zijn
             if not any_moves_left: 
-                    return 0 # als er geen zetten meer mogelijk zijn, is het gelijkspel
+                return 0 # als er geen zetten meer mogelijk zijn, is het gelijkspel
 
-        if current_player == 1: # als speler 1 aan de beurt is
-            chosen_section, a = tactic_1(board, big_board, forced_section) # haal het grote veld en de 'a' op uit de tactiek van speler 1
-        else: # anders is speler 2 aan de beurt
-            chosen_section, a = tactic_2(board, big_board, forced_section) # haal het grote veld en de 'a' op uit de tactiek van speler 2
+        if current_player == 1: # als speler 1 aan de beurt is, wordt de tactiek van speler 1 gebruikt
+            chosen_section, a = worker_tactic_1(board, big_board, forced_section) # gebruik maken van de tactiek van speler 1
+        else: # als speler 2 aan de beurt is, wordt de tactiek van speler 2 gebruikt
+            chosen_section, a = worker_tactic_2(board, big_board, forced_section) # gebruik maken van de tactiek van speler 2
 
         chosen_field = chosen_section + a # vaststellen van het gekozen veld
         board[chosen_field] = current_player # het gekozen veld invullen met de waarde van de speler
@@ -133,10 +141,10 @@ if __name__ == '__main__':
     stats = {1: 0, 2: 0, 0: 0} # winst bijhouden, alle waarden beginnen op 0
     
     chunk = max(1, aantal_simulaties // (cores * 4)) # bepalen van de chunk size voor multiprocessing, zodat de taken gelijkmatig verdeeld worden over de cores
-    game_args = [(tactic_p1, tactic_p2)] * aantal_simulaties # alle simulaties gelijk stellen, zodat elke simulatie dezelfde tactieken gebruikt
+    game_args = range(aantal_simulaties) # alle simulaties gelijk stellen, zodat elke simulatie dezelfde tactieken gebruikt
 
     # Multiprocessing Pool gebruiken om de simulaties parallel uit te voeren
-    with Pool(processes=cores) as pool:
+    with Pool(processes=cores, initializer=init_worker, initargs=(tactic_p1, tactic_p2)) as pool:
         results = pool.map(run_single_game, game_args, chunksize=chunk)
     
     # resultaten bijhouden van de simulaties
