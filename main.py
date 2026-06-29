@@ -58,7 +58,7 @@ def run_single_game(args):
         
         if forced_section is None:
             any_moves_left = any(big_board[b] == 0 and board[b + s] == 0 for b in big_board for s in range(1, 10)) # vaststellen of er nog zetten mogelijk zijn
-                if not any_moves_left: 
+            if not any_moves_left: 
                     return 0 # als er geen zetten meer mogelijk zijn, is het gelijkspel
 
         if current_player == 1: # als speler 1 aan de beurt is
