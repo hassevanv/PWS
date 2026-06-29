@@ -1,6 +1,6 @@
 import random
 
-def choose_move(board, big_board, forced_section,current_player):
+def choose_move(board, big_board, forced_section, current_player=None):
 
     SMALL_CORNERS = (1, 3, 7, 9)
     BIG_CORNERS = (10, 30, 70, 90)

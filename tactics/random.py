@@ -1,7 +1,8 @@
 import random
 
 # vaststellen hoe een veld gekozen wordt
-def choose_move(board, big_board, forced_section,current_player):
+def choose_move(board, big_board, forced_section, current_player=None):
+    
     if forced_section is None: # vaststellen van de beschikbare secties als er geen forced_section is
         available_sections = [big for big in (10, 20, 30, 40, 50, 60, 70, 80, 90)
                               if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]

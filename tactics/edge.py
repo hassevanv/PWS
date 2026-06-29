@@ -1,7 +1,7 @@
 import random
 
-def choose_move(board, big_board, forced_section,current_player):
-
+def choose_move(board, big_board, forced_section, current_player=None):
+    
     SMALL_EDGES = (2, 4, 6, 8)
     BIG_EDGES = (20, 40, 60, 80)
 
