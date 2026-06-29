@@ -94,7 +94,7 @@ def get_available_tactics(): # ophalen van de beschikbare tactieken in de map "t
     tactics_dir = os.path.join(os.path.dirname(__file__), "tactics")
     files = os.listdir(tactics_dir)
     tactics = [f[:-3] for f in files if f.endswith(".py") and f != "__init__.py"]
-    return sorted(tactics)
+    return sorted(tactics, key=lambda x: (0 if x == "random" else 1, x))
 
 def select_tactic(player_num, tactics_list): # printen van de beschikbare tactieken  
     print(f"\nBeschikbare tactieken voor Speler {player_num}:")
