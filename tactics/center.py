@@ -1,6 +1,6 @@
 import random
 
-def choose_move(board, big_board, forced_section):
+def choose_move(board, big_board, forced_section,current_player):
 
     # --- STAP 1: BEPAAL DE GROTE SECTIE (Als er een Free Move is) ---
     if forced_section is None:

@@ -71,9 +71,9 @@ def run_single_game(args):
                 return 0 # als er geen zetten meer mogelijk zijn, is het gelijkspel
 
         if current_player == 1: # als speler 1 aan de beurt is, wordt de tactiek van speler 1 gebruikt
-            chosen_section, a = worker_tactic_1(board, big_board, forced_section) # gebruik maken van de tactiek van speler 1
+            chosen_section, a = worker_tactic_1(board, big_board, forced_section,current_player) # gebruik maken van de tactiek van speler 1
         else: # als speler 2 aan de beurt is, wordt de tactiek van speler 2 gebruikt
-            chosen_section, a = worker_tactic_2(board, big_board, forced_section) # gebruik maken van de tactiek van speler 2
+            chosen_section, a = worker_tactic_2(board, big_board, forced_section,current_player) # gebruik maken van de tactiek van speler 2
 
         chosen_field = chosen_section + a # vaststellen van het gekozen veld
         board[chosen_field] = current_player # het gekozen veld invullen met de waarde van de speler
