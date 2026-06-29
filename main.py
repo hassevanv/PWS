@@ -152,7 +152,7 @@ if __name__ == '__main__':
     
     aantal_simulaties = ask_simulation_count() # aantal simulaties inlezen
 
-    # simulaties uitvoeren over alle CPU's
+    # simulaties uitvoeren over alle cores
     cores = cpu_count()
     print(f"\n[INFO] Starten van {aantal_simulaties} potjes ({tactic_p1} VS {tactic_p2}) over {cores} cores...")
     
