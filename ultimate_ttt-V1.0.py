@@ -3,7 +3,7 @@ import time
 from multiprocessing import Pool, cpu_count
 
 # Aantal herhalingen
-AANTAL_SIMULATIES = 10000000  
+AANTAL_SIMULATIES = 1000000  
 
 # Vaststellen wanneer er sprake is van winst in het grote/kleine bord
 BIG_WIN_CONDITIONS = (
@@ -91,7 +91,7 @@ def run_single_game(_):
 
 if __name__ == '__main__':
     cores = cpu_count()
-    print(f"Start... {AANTAL_SIMULATIES} potjes over {cores} cores met chunksize optimalisatie.")
+    print(f"Start... {AANTAL_SIMULATIES} potjes over {cores} cores.")
     
     start_time = time.time()
     stats = {1: 0, 2: 0, 0: 0}
@@ -100,7 +100,6 @@ if __name__ == '__main__':
     chunk = max(1, AANTAL_SIMULATIES // (cores * 4))
 
     with Pool(processes=cores) as pool:
-        # chunksize=chunk zorgt dat de CPU veel efficiënter data verdeelt
         results = pool.map(run_single_game, range(AANTAL_SIMULATIES), chunksize=chunk)
     
     for result in results:
