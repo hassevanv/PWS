@@ -20,12 +20,12 @@ def choose_move(board, big_board, forced_section,current_player):
         chosen_section = forced_section # naar de forced_section gaan als er een is
 
     available_cells_corners = [s for s in SMALL_CORNERS if board[chosen_section + s] == 0] # vrije lege kleine hoeken vaststellen
-    player_cells_corners = [s for s in SMALL_CORNERS if board[chosen_section + s] == current_player] # genomen vakjes
+    player_cells_corners = [s for s in SMALL_CORNERS if board[chosen_section + s] == current_player] #board[chosen_section + s] == current_player] # genomen vakjes
     surrounding_corners = ((3,7),(1,3),(1,9),(1,7),(0,0),(3,9),(1,9),(7,9),(3,7)) # Lijst met omliggende hoeken ingedeeld als [0] is vakje 1 [1] is vakje 2 [2] is vakje 3 etc. (vakje 5 heeft gen surrounding corners)
     chosen_cell = 0
 
-    if len(player_cells_corners):
-        chosen_cell = random.choice(available_cells_corners)
+    if board[chosen_section + 1] == current_player: #for s in SMALL_CORNERS:
+        #chosen_cell = random.choice(available_cells_corners)
         # if available_cells_corners in surrounding_corners[i-1] for i in player_cells_corners:
         # chose_cell = surrounding_corners[1][1]
 
