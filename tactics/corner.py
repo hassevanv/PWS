@@ -4,7 +4,7 @@ def choose_move(board, big_board, forced_section, current_player=None, opponent_
 
     SMALL_CORNERS = (1, 3, 7, 9)
     BIG_CORNERS = (10, 30, 70, 90)
-
+    
     if forced_section is None: # als er vrije keuze is
         available_big_corners = [big for big in BIG_CORNERS # filter vrije grote hoeken
                                  if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
