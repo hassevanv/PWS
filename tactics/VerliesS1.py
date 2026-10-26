@@ -1,7 +1,8 @@
 import random
 #nog niet af!!!
+# zie commentaar regel 33 (if big_board[50]...,10)))
 
-def choose_move(board, big_board, forced_section, current_player=None, opponent_player=None):
+def choose_move(board, big_board, forced_section, current_player, opponent_player):
 
     # --- Fase 1: probeer middenzelfverwijzing te joinken ---
     if forced_section is None:
@@ -29,7 +30,7 @@ def choose_move(board, big_board, forced_section, current_player=None, opponent_
 
     # --- Fase 2: BEPAAL HET VAKJE BINNEN DE GEKOZEN SECTIE ---
     # Bepaal of groot midden al gewonnen is, terugsturen als niet
-    if big_board[50] == 0 and board[chosen_section + 5] == 0 and not all(board[50 + s] != 0 for s in range(1, 10)):
+    if big_board[50] == 0 and board[chosen_section + 5] == 0 and not all(board[50 + s] != 0 for s in range(1, 10)): #waarom 50 en chosen section en niet alleen chosen section of alleen 50 
         chosen_cell = 5
     else:
         if not (forced_section is None): #kijk of je kan terugverwijzen naar niet-gewonnen section
