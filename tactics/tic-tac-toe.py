@@ -1,7 +1,10 @@
 import random
 import main
 
-def threat(board, current_player):
+def threat(board, current_player, opponent_player, available_cells):
+    # Kiest cell die 2 op een rij afmaakt
+    # Als die cell niet bestaat return 0
+    
     BOARD = range(1,10)
     BIG_BOARD = range(10,100,10)
     THREATS = (((2,3),(4,7),(5,9)), # Alle twee op een rij, gesorteerd op de lege vakjes in de twee op een rij.
@@ -18,53 +21,49 @@ def threat(board, current_player):
 
     return chosen_cell
 
-def check(board, current_player, opponent_player, chosen_section):
+def check(board, current_player, opponent_player, chosen_section, available_cells):
+    # Past regels 2 t/m 8 to van de tactic
     BOARD = range(1,10)
     CORNERS = (1, 3, 7, 9)
-    
-    player_cells = [cell for cell in BOARD if board[chosen_section + cell] == current_player]
-    opponent_cells = [cell for cell in BOARD if board[chosen_section + cell] == opponent_player]
-    available_cells = [cell for cell in BOARD if board[chosen_section + cell] == 0]
-    available_corner_cells = [cell for cell in CORNERS if board[chosen_section + cell] == 0]
+    mult = 1
 
-    # 2. Als de tegenstander twee op een rij heeft, block.
-    elif len(opponent_cells) >= 2: 
-        if for cell in THREATS: 
-            if board[chosen_section + cell[0]] == board[chosen_section + cell[1]]
+    if chosen_section == 0:
+        mult = 10
 
     # 3. Als het kan, maak een dubbele dreiging.
-    elif false: 
+    if False: 
         return 1
 
     # 4. Als die gemaakt kan worden, blokkeer de dubbele dreiging van de tegenstander.
-    elif false: 
+    elif False: 
         return 1
 
     # 5. Als het kan, neem het midden.
-    elif board[chosen_section + 5] == 0:
-        chosen_cell = 5
+    elif available_cells == 50 or available_cells == 5:
+        return 5
 
-    # 6. Als het kan, neem een overstaande hoek tegenover de tegenstander.
-    elif false: 
-        return 1
+    # 6. Als het kan, neem een overstaande hoek tegenover de tegenstander. 
+    for cell in CORNERS:
+        if board[chosen_section + cell*mult] == 0 and board[chosen_section + (10-cell)*mult] == opponent_player:  # Overstaande hoeken bij elkaar opgeteld zijn gelijk aan 10
+            return cell
 
     # 7. Als het kan, neem een hoek.
-    elif available_corner_cells: 
-        chosen_cell = random.choice(available_corner_cells)
+    available_corner_cells = [cell for cell in CORNERS if cell*mult in available_cells]
 
+    if available_corner_cells:
+        return random.choice(available_corner_cells)
     # 8. Anders, neem een rand.
+    elif available_cells[0]%10 == 0:        # Controleer of het in section of cell is, zodat er altijd een getal tussen de 1 en de 9 als output is.
+        return random.choice(available_cells)/10
     else:
-        chosen_cell = random.choice(available_cells)
+        return random.choice(available_cells)
 
-    return chosen_cell
+    return error
 
 def choose_move(board, big_board, forced_section, current_player, opponent_player):
 
     CORNERS = (1, 3, 7, 9)
-    BIG_CORNERS = (10, 30, 70, 90)
-    #BIG_EDGES = (20, 40, 60, 80)
-    BOARD = range(1,10)
-    BIG_BOARD = range(10,100,10)
+    BOARD = range(10,100, 10)
     THREATS = (((2,3),(4,7),(5,9)), # Alle twee op een rij, gesorteerd op de lege vakjes in de twee op een rij.
                ((1,3),(5,8)),
                ((1,2),(6,9),(5,7)),
@@ -74,23 +73,23 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
                ((8,9),(1,4),(3,5)),
                ((7,9),(2,5)),
                ((7,8),(3,6),(1,5)))
-    BIG_THREATS = (((20,30),(40,70),(50,90)),
-                    ((10,30),(50,80)),
-                    ((10,20),(60,90),(50,70)),
-                    ((50,60),(10,70)),
-                    ((40,60),(20,80),(10,90),(30,70)),
-                    ((40,50),(30,90)),
-                    ((80,90),(10,40),(30,50)),
-                    ((70,90),(20,50)),
-                    ((70,80),(30,60),(10,50)))
 
 
     # Deel 1, voor het grote veld
     if forced_section is None: # als er vrije keuze is
-        player_sections = [big for big in BIG_BOARD if big_board[big] == current_player]
-        opponent_sections = [big for big in BIG_BOARD if big_board[big]== opponent_player]
-        available_sections = [big for big in BIG_BOARD if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
-        available_corner_sections = [big for big in BIG_CORNERS if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
+        player_sections = [big for big in BOARD if big_board[big] == current_player]
+        opponent_sections = [big for big in BOARD if big_board[big]== opponent_player]
+        available_sections = [big for big in BOARD if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
+        available_corner_sections = [big for big in CORNERS if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
+
+        # 1.
+        chosen_section = threat(board, current_player, opponent_player, available_sections)
+        # 2.
+        if chosen_section == 0:
+            chosen_section = threat(board, opponent_player, current_player, available_sections)
+        # 3-8.
+        if chosen_section == 0:
+            chosen_section = check(board, current_player, opponent_player, 0, available_sections)*10
         #available_edge_sections = [big for big in BIG_EDGES if big_board[big] == 0 and not all(board[big + s] != 0 for s in range(1, 10))]
 
         # 1. Als er twee op een rij is in minimaal 1 kleiner veld, kies dan het voordeligste veld.
@@ -188,50 +187,24 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
                 # 8. Anders, neem een rand.
                 else:
                     chosen_section = random.choice(big_possibilities)
-        # Deel 1, voor het grote veld
     else:
         chosen_section = forced_section
 
     # Deel 2, voor het kleine veld
-    
-    player_cells = [cell for cell in BOARD if board[chosen_section + cell] == current_player]
     opponent_cells = [cell for cell in BOARD if board[chosen_section + cell] == opponent_player]
     available_cells = [cell for cell in BOARD if board[chosen_section + cell] == 0]
-    available_corner_cells = [cell for cell in CORNERS if board[chosen_section + cell] == 0]
-   
-    if chosen_cell is None: # Als het vakje nog niet bepaald is
-    # 1. Als er twee op een rij is, win.
-        if len(player_cells) >=2
-            if for cell in THREATS: 
-                if board[chosen_section + cell[0]] == board[chosen_section + cell[1]]
+    
+    if len(available_cells) == 1:
+        return chosen_section, available_cells[0]
 
-        # 2. Als de tegenstander twee op een rij heeft, block.
-        elif len(opponent_cells) >= 2: 
-            if for cell in THREATS: 
-                if board[chosen_section + cell[0]] == board[chosen_section + cell[1]]
-
-        # 3. Als het kan, maak een dubbele dreiging.
-        elif false: 
-            return 1
-
-        # 4. Als die gemaakt kan worden, blokkeer de dubbele dreiging van de tegenstander.
-        elif false: 
-            return 1
-
-        # 5. Als het kan, neem het midden.
-        elif board[chosen_section + 5] == 0:
-            chosen_cell = 5
-
-        # 6. Als het kan, neem een overstaande hoek tegenover de tegenstander.
-        elif false: 
-            return 1
-
-        # 7. Als het kan, neem een hoek.
-        elif available_corner_cells: 
-            chosen_cell = random.choice(available_corner_cells)
-
-        # 8. Anders, neem een rand.
-        else:
-            chosen_cell = random.choice(available_cells)
+    # 1. Als je twee op een rij hebt, win.
+    if len(opponent_cells) + len(available_cells) >= 8:
+        chosen_cell = threat(board, current_player, opponent_player)
+    
+    # 2. Als de tegenstander twee op een rij heeft, block.
+    elif len(opponent_cells) >= 2 and chosen_cell == 0: 
+        chosen_cell = threat(board, opponent_player, current_player)
+    else:
+        chosen_cell = check(board, current_player, opponent_player, chosen_section, available_cells)
 
     return chosen_section, chosen_cell # Return de gekozen sectie en het gekozen vakje
