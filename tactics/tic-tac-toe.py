@@ -61,7 +61,7 @@ def check(board, current_player, opponent_player, chosen_section, available_cell
         mult = 10
 
     # 5. Als het kan, neem het midden.
-    elif 50 in available_cells or 5 in available_cells :
+    if 50 in available_cells or 5 in available_cells :
         return 5
 
     # 6. Als het kan, neem een overstaande hoek tegenover de tegenstander. 
