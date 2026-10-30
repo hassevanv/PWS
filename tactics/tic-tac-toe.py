@@ -33,8 +33,10 @@ def win(board, current_player, opponent_player, chosen_section, available_cells,
                         chosen_cells.append(cell)
                     else:
                         return cell
- 
-    return chosen_cells
+    if giveAll:
+        return chosen_cells
+    else: 
+        return 0
 
 def doubleThreat(board, current_player, opponent_player, chosen_section, available_cells):
     old_board = board
@@ -57,8 +59,8 @@ def check(board, current_player, opponent_player, chosen_section, available_cell
         mult = 10
 
     # 5. Als het kan, neem het midden.
-    elif available_cells == 50 or available_cells == 5:
-        return 5
+    #elif 50 in available_cells or 5 in available_cells :
+    #    return 5
 
     # 6. Als het kan, neem een overstaande hoek tegenover de tegenstander. 
     for cell in CORNERS:
@@ -92,8 +94,16 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
 
     # Deel 1, voor het grote veld
     if forced_section is None: # als er vrije keuze is
-        opponent_sections = [big for big in BIG_BOARD if big_board[big]== opponent_player]
-        available_sections = [big for big in BIG_BOARD if big_board[big] == 0 and not all(board[big + s] != 0 for s in BOARD)]
+        opponent_sections = []
+        available_sections = []
+        for big in BIG_BOARD:
+            if big_board[big] == opponent_player:
+                opponent_sections.append(big)
+            if big_board[big] == 0:
+                available_sections.append(big)
+        #opponent_sections = [big for big in BIG_BOARD if big_board[big]== opponent_player]
+        #available_sections = [big for big in BIG_BOARD if big_board[big] == 0 and not all(board[big + s] != 0 for s in BOARD)]
+        chosen_section = 0
 
         # 1.
         if len(opponent_sections) + len(available_sections) >= 8:
@@ -103,22 +113,29 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
             chosen_section = win(big_board, opponent_player, current_player, 0, available_sections, False) * 10
         # 3. Als het kan, maak een dubbele dreiging.
         if len(opponent_sections) + len(available_sections) >= 8: 
-            chosen_section = doubleThreat(big_board, current_player, opponent_player, 0, available_sections) * 10
+            chosen_section = doubleThreat(big_board, current_player, opponent_player, 0, available_sections)
         # 4. Als die gemaakt kan worden, blokkeer de dubbele dreiging van de tegenstander.
         if len(opponent_sections) >= 2 and chosen_section == 0:
-            chosen_section = doubleThreat(big_board, opponet_player, current_player, 0, available_sections) * 10
-        # 5-8.
+            chosen_section = doubleThreat(big_board, opponent_player, current_player, 0, available_sections) # blijkbaar niet geactiveerd voor winst als speler 1
+        # 5-8.  blijkbaar niet geactiveerd voordat 1-4 een keer geactiveerd is als speler 1 zijnde
         if chosen_section == 0:
-            chosen_section = check(board, current_player, opponent_player, 0, available_sections) * 10
+            chosen_section = check(big_board, current_player, opponent_player, 0, available_sections) * 10 # blijkbaar overbodig voor winst als speler 1
     else:
         chosen_section = forced_section
 
     # Deel 2, voor het kleine veld
-    opponent_cells = [cell for cell in BOARD if board[chosen_section + cell] == opponent_player]
-    available_cells = [cell for cell in BOARD if board[chosen_section + cell] == 0]
-    
+    opponent_cells = []
+    available_cells = []
+    for cell in BOARD:
+        if board[chosen_section + cell] == opponent_player:
+            opponent_cells.append(cell)
+        if board[chosen_section + cell] == 0:
+            available_cells.append(cell)
+    #opponent_cells = [cell for cell in BOARD if board[chosen_section + cell] == opponent_player]
+    #available_cells = [cell for cell in BOARD if board[chosen_section + cell] == 0]
+    chosen_cell = 0
     if len(available_cells) == 1:
-        return chosen_section, available_cells[0]
+        chosen_cell = available_cells[0]
 
     # 1. Als je twee op een rij hebt, win.
     if len(opponent_cells) + len(available_cells) >= 8:
@@ -135,8 +152,8 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
     #4.
     if len(opponent_cells) >= 2 and chosen_cell == 0: 
         chosen_cell = doubleThreat(board, opponent_player, current_player, chosen_section, available_cells)
-    #5-8.
-    if chosen_cell == 0:
+    #5-8. blijkbaar niet geactiveerd voordat 1-4 een keer geactiveerd is als speler 1 zijnde
+    if chosen_cell == 0: 
         chosen_cell = check(board, current_player, opponent_player, chosen_section, available_cells)
 
-    return chosen_section, chosen_cell # Return de gekozen sectie en het gekozen vakje
+    return int(chosen_section), int(chosen_cell) # Return de gekozen sectie en het gekozen vakje
