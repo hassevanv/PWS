@@ -1,5 +1,5 @@
 import random
-import main
+import copy
 
 def win(board, current_player, opponent_player, chosen_section, available_cells, giveAll):
     # Kiest cell die 2 op een rij afmaakt
@@ -39,14 +39,16 @@ def win(board, current_player, opponent_player, chosen_section, available_cells,
         return 0
 
 def doubleThreat(board, current_player, opponent_player, chosen_section, available_cells):
-    old_board = board
+    old_board = copy.deepcopy(board)
+    #print(old_board)
 
     for cell in available_cells:
         board[chosen_section + cell] = current_player
         threats = win(board, current_player, opponent_player, chosen_section, available_cells, True)
+        #print("nieuw ", old_board)
         if len(threats) >= 2:
             return cell
-        board = old_board
+        board = copy.deepcopy(old_board)
 
     return 0
 
@@ -106,13 +108,13 @@ def choose_move(board, big_board, forced_section, current_player, opponent_playe
         chosen_section = 0
 
         # 1.
-        if len(opponent_sections) + len(available_sections) >= 8:
+        if len(opponent_sections) + len(available_sections) <= 8: # Tenminste twee player vakjes is blijkbaar niet nodig voor winst
             chosen_section = win(big_board, current_player, opponent_player, 0, available_sections, False) * 10
         # 2.
         if len(opponent_sections) >= 2 and chosen_section == 0:
             chosen_section = win(big_board, opponent_player, current_player, 0, available_sections, False) * 10
         # 3. Als het kan, maak een dubbele dreiging.
-        if len(opponent_sections) + len(available_sections) >= 8: 
+        if len(opponent_sections) + len(available_sections) <= 8: # Tenminste twee player vakjes is blijkbaar niet nodig voor winst
             chosen_section = doubleThreat(big_board, current_player, opponent_player, 0, available_sections)
         # 4. Als die gemaakt kan worden, blokkeer de dubbele dreiging van de tegenstander.
         if len(opponent_sections) >= 2 and chosen_section == 0:
