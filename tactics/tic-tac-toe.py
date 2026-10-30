@@ -46,6 +46,7 @@ def doubleThreat(board, current_player, opponent_player, chosen_section, availab
         board[chosen_section + cell] = current_player
         threats = win(board, current_player, opponent_player, chosen_section, available_cells, True)
         #print("nieuw ", old_board)
+        board = copy.deepcopy(old_board)
         if len(threats) >= 2:
             return cell
         board = copy.deepcopy(old_board)
